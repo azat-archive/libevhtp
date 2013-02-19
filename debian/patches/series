@@ -1,0 +1,3 @@
+cmake-target-soname.patch
+test_proxy-missing-include-signal_h.patch
+cmakelists-system-libonig.patch
