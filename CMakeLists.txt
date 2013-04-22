@@ -219,6 +219,8 @@ endif()
 add_library(libevhtp ${EVHTP_LIBTYPE} ${LIBEVHTP_SOURCES} ${ONIG_SOURCES})
 
 set_target_properties(libevhtp PROPERTIES OUTPUT_NAME "evhtp")
+set_target_properties(libevhtp PROPERTIES VERSION
+					 "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 target_link_libraries(libevhtp ${LIBEVHTP_EXTERNAL_LIBS})
 
 add_executable(test EXCLUDE_FROM_ALL examples/test.c)
