@@ -1,0 +1,17 @@
+Subject: Set target properties to include version and soversion
+Author: Dennis van Dok <dennisvd@nikhef.nl>
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -197,7 +197,11 @@
+ 
+ if (EVHTP_BUILD_SHARED)
+ 	add_library(libevhtpShared SHARED ${LIBEVHTP_SOURCES} ${ONIG_SOURCES})
+-	set_target_properties(libevhtpShared PROPERTIES OUTPUT_NAME "evhtp")
++	set_target_properties(libevhtpShared PROPERTIES 
++	  VERSION ${PROJECT_VERSION}
++	  SOVERSION 1
++	  OUTPUT_NAME evhtp
++	  )
+ 	target_link_libraries(libevhtpShared ${LIBEVHTP_EXTERNAL_LIBS})
+ 	install (TARGETS libevhtpShared DESTINATION lib)
+ 

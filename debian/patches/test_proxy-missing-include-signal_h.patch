@@ -1,0 +1,11 @@
+Subject: missing signal.h results in compilation error over SIGTERM
+Author: Dennis van Dok <dennisvd@nikhef.nl>
+--- a/test_proxy.c
++++ b/test_proxy.c
+@@ -1,5 +1,6 @@
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <signal.h>
+ #include <string.h>
+ #include <stdint.h>
+ #include <errno.h>

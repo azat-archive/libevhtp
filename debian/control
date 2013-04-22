@@ -1,0 +1,32 @@
+Source: libevhtp
+Priority: extra
+Maintainer: Dennis van Dok <dennisvd@nikhef.nl>
+Build-Depends: debhelper (>= 8.0.0), cmake, libevent-dev, libssl-dev,
+ libonig-dev, doxygen
+Standards-Version: 3.9.4
+Section: libs
+Homepage: https://github.com/ellzey/libevhtp
+#Vcs-Git: git://git.debian.org/collab-maint/libevhtp.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/libevhtp.git;a=summary
+
+Package: libevhtp-dev
+Section: libdevel
+Architecture: any
+Depends: libevhtp1 (= ${binary:Version}), ${misc:Depends}
+Description: Libevent based HTTP API, development files
+ Libevent's http interface was created as a
+ JIT server, never meant to be a full-fledged HTTP service. 
+ This library attempts to improve on that.
+ .
+ This package contains the development library.
+
+Package: libevhtp1
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Libevent based HTTP API, development files, runtime files
+ Libevent's http interface was created as a
+ JIT server, never meant to be a full-fledged HTTP service. 
+ This library attempts to improve on that.
+ .
+ This package contains the runtime library.
+

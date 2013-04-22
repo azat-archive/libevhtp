@@ -1,0 +1,10 @@
+Document: libevhtp-edv
+Title: Debian libevhtp-dev Doxygen documentation
+Author:  Mark Ellzey <socket@gmail.com>
+Abstract: This is the Doxygen generated documentation
+ of the libevhtp library.
+Section: Programming/C
+
+Format: HTML
+Index: /usr/share/doc/libevhtp-dev/html/index.html
+Files: /usr/share/doc/libevhtp-dev/html/*.html
