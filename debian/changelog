@@ -1,3 +1,9 @@
+libevhtp (1.2.0-5) oneiric; urgency=low
+
+  * Fix double free for evthr at shutdown
+
+ -- Azat Khuzhin <a3at.mail@gmail.com>  Thu, 16 May 2013 14:19:50 +0400
+
 libevhtp (1.2.0-4) oneiric; urgency=high
 
   * Add build for oneiric
