@@ -289,8 +289,8 @@ evhtp_ssl_init(evhtp_t * htp, evhtp_ssl_cfg_t * cfg) {
             break;
     }     /* switch */
 
-    if (SSL_CTX_use_certificate_file(htp->ssl_ctx, cfg->pemfile, SSL_FILETYPE_PEM) != 1) {
-        fprintf(stderr, "SSL_CTX_use_certificate_file() failed\n");
+    if (SSL_CTX_use_certificate_chain_file(htp->ssl_ctx, cfg->pemfile) != 1) {
+        fprintf(stderr, "SSL_CTX_use_certificate_chain_file() failed\n");
     }
     if (SSL_CTX_use_PrivateKey_file(htp->ssl_ctx,
                                     cfg->privfile ? cfg->privfile : cfg->pemfile,
