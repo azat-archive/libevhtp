@@ -24,6 +24,20 @@ _evhtp_ssl_get_thread_id(void) {
 #endif
 }
 
+static void print_err(int val)
+{
+    int err;
+    printf("Error was %d\n", val);
+
+    while ((err = ERR_get_error())) {
+        const char *msg = (const char *)ERR_reason_error_string(err);
+        const char *lib = (const char *)ERR_lib_error_string(err);
+        const char *func = (const char *)ERR_func_error_string(err);
+
+        printf("%s in %s %s\n", msg, lib, func);
+    }
+}
+
 static void
 _evhtp_ssl_thread_lock(int mode, int type, const char * file, int line) {
     if (type < ssl_num_locks) {
@@ -174,6 +188,7 @@ evhtp_ssl_init(evhtp_t * htp, evhtp_ssl_cfg_t * cfg) {
     evhtp_ssl_cache_del  del_cb  = NULL;
 #endif
     long                 cache_mode;
+    int                  err;
 
     if (cfg == NULL || htp == NULL || cfg->pemfile == NULL) {
         return -1;
@@ -292,10 +307,11 @@ evhtp_ssl_init(evhtp_t * htp, evhtp_ssl_cfg_t * cfg) {
     if (SSL_CTX_use_certificate_chain_file(htp->ssl_ctx, cfg->pemfile) != 1) {
         fprintf(stderr, "SSL_CTX_use_certificate_chain_file() failed\n");
     }
-    if (SSL_CTX_use_PrivateKey_file(htp->ssl_ctx,
-                                    cfg->privfile ? cfg->privfile : cfg->pemfile,
-                                    SSL_FILETYPE_PEM) != 1) {
+    if (err = SSL_CTX_use_PrivateKey_file(htp->ssl_ctx,
+                                          cfg->privfile ? cfg->privfile : cfg->pemfile,
+                                          SSL_FILETYPE_PEM) != 1) {
         fprintf(stderr, "SSL_CTX_use_PrivateKey_file() failed\n");
+        print_err(err);
     }
 
     SSL_CTX_set_session_id_context(htp->ssl_ctx,
