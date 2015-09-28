@@ -1188,6 +1188,10 @@ _evhtp_req_parser_headers(evhtp_parser * p) {
                 req->websock = 1;
 
                 evhtp_send_reply_start(req, EVHTP_RES_SWITCH_PROTO);
+
+                if (req->cb) {
+                    (req->cb)(req, req->cbarg);
+                }
             }
         }
     }
