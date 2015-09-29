@@ -414,7 +414,8 @@ evhtp_ws_gen_handshake(evhtp_kvs_t * hdrs_in, evhtp_kvs_t * hdrs_out) {
     out[out_bytes] = '\0';
 
     evhtp_kvs_add_kv(hdrs_out,
-                     evhtp_kv_new("Sec-WebSocket-Accept", out, 1, 0));
+                     evhtp_kv_new("Sec-WebSocket-Accept", out, 1, 1));
+    free(out);
 
     if ((upgrade = evhtp_kv_find(hdrs_in, "Upgrade"))) {
         evhtp_kvs_add_kv(hdrs_out,
