@@ -2346,8 +2346,8 @@ evhtp_query_t *
 evhtp_parse_query_wflags(const char * query, size_t len, int flags) {
     evhtp_query_t    * query_args;
     query_parser_state state;
-    char             * key_buf;
-    char             * val_buf;
+    char             * key_buf = NULL;
+    char             * val_buf = NULL;
     size_t             key_idx;
     size_t             val_idx;
     unsigned char      ch;
@@ -2361,12 +2361,11 @@ evhtp_parse_query_wflags(const char * query, size_t len, int flags) {
     query_args = evhtp_query_new();
 
     if (!(key_buf = malloc(len + 1))) {
-        return NULL;
+        goto error;
     }
 
     if (!(val_buf = malloc(len + 1))) {
-        free(key_buf);
-        return NULL;
+        goto error;
     }
 
     state   = s_query_start;
@@ -2597,6 +2596,7 @@ query_key:
 
     return query_args;
 error:
+    evhtp_query_free(query_args);
     free(key_buf);
     free(val_buf);
 
