@@ -369,6 +369,7 @@ evhtp_ws_gen_handshake(evhtp_kvs_t * hdrs_in, evhtp_kvs_t * hdrs_out) {
     size_t       ws_key_len;
     sha1_ctx     sha;
     char       * out        = NULL;
+    char       * tmp;
     size_t       out_bytes  = 0;
     char         digest[20] = { 0 };
 
@@ -404,7 +405,12 @@ evhtp_ws_gen_handshake(evhtp_kvs_t * hdrs_in, evhtp_kvs_t * hdrs_out) {
         return -1;
     }
 
-    out = realloc(out, out_bytes + 1);
+    tmp = realloc(out, out_bytes + 1);
+    if (!tmp) {
+        free(out);
+        return -1;
+    }
+    out = tmp;
     out[out_bytes] = '\0';
 
     evhtp_kvs_add_kv(hdrs_out,
