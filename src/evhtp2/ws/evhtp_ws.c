@@ -398,10 +398,10 @@ evhtp_ws_gen_handshake(evhtp_kvs_t * hdrs_in, evhtp_kvs_t * hdrs_out) {
     sha1_init(&sha);
     sha1_update(&sha, magic_w_ws_key, magic_w_ws_key_len - 1);
     sha1_finalize(&sha, digest);
+    free(magic_w_ws_key);
 
     if (base_encode(base64_rfc, digest,
                     20, (void **)&out, &out_bytes) == -1) {
-        free(magic_w_ws_key);
         return -1;
     }
 
@@ -415,8 +415,6 @@ evhtp_ws_gen_handshake(evhtp_kvs_t * hdrs_in, evhtp_kvs_t * hdrs_out) {
 
     evhtp_kvs_add_kv(hdrs_out,
                      evhtp_kv_new("Sec-WebSocket-Accept", out, 1, 0));
-
-    free(magic_w_ws_key);
 
     if ((upgrade = evhtp_kv_find(hdrs_in, "Upgrade"))) {
         evhtp_kvs_add_kv(hdrs_out,
