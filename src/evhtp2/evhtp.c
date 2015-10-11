@@ -249,7 +249,9 @@ _ws_msg_fini(evhtp_ws_parser * p) {
     req = evhtp_ws_parser_get_userdata(p);
     assert(req != NULL);
 
-    if (req->cb) {
+    if (req->hooks && req->hooks->on_ws_chunk_new) {
+        (req->hooks->on_ws_chunk_new)(req, req->hooks->on_ws_chunk_new_arg);
+    } else if (req->cb) {
         (req->cb)(req, req->cbarg);
     }
 
@@ -3010,6 +3012,10 @@ evhtp_set_hook(evhtp_hooks_t ** hooks, evhtp_hook_type type, evhtp_hook cb, void
             (*hooks)->on_conn_fini         = (evhtp_hook_conn_fini_cb)cb;
             (*hooks)->on_conn_fini_arg     = arg;
             break;
+        case evhtp_hook_on_ws_chunk_new:
+            (*hooks)->on_ws_chunk_new         = (evhtp_hook_ws_chunk_new_cb)cb;
+            (*hooks)->on_ws_chunk_new_arg     = arg;
+            break;
         case evhtp_hook_on_error:
             (*hooks)->on_error = (evhtp_hook_err_cb)cb;
             (*hooks)->on_error_arg         = arg;
@@ -3079,6 +3085,10 @@ evhtp_unset_all_hooks(evhtp_hooks_t ** hooks) {
     }
 
     if (evhtp_unset_hook(hooks, evhtp_hook_on_conn_fini)) {
+        res -= 1;
+    }
+
+    if (evhtp_unset_hook(hooks, evhtp_hook_on_ws_chunk_new)) {
         res -= 1;
     }
 

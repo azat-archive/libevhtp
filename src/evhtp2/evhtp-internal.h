@@ -243,6 +243,7 @@ struct evhtp_hooks {
     evhtp_hook_read_cb          on_read;
     evhtp_hook_req_fini_cb      on_req_fini;
     evhtp_hook_conn_fini_cb     on_conn_fini;
+    evhtp_hook_ws_chunk_new_cb  on_ws_chunk_new;
     evhtp_hook_err_cb           on_error;
     evhtp_hook_chunk_new_cb     on_new_chunk;
     evhtp_hook_chunk_fini_cb    on_chunk_fini;
@@ -258,6 +259,7 @@ struct evhtp_hooks {
     void * on_read_arg;
     void * on_req_fini_arg;
     void * on_conn_fini_arg;
+    void * on_ws_chunk_new_arg;
     void * on_error_arg;
     void * on_new_chunk_arg;
     void * on_chunk_fini_arg;

@@ -109,6 +109,7 @@ enum evhtp_hook_type {
     evhtp_hook_on_read,     /**< type which defines to hook whenever the parser recieves data in a body */
     evhtp_hook_on_req_fini, /**< type which defines to hook before the req is free'd */
     evhtp_hook_on_conn_fini,
+    evhtp_hook_on_ws_chunk_new, /**< ws */
     evhtp_hook_on_new_chunk,
     evhtp_hook_on_chunk_complete,
     evhtp_hook_on_chunks_complete,
@@ -187,6 +188,7 @@ typedef evhtp_res (*evhtp_hook_path_cb)(evhtp_req_t * req, evhtp_path_t * path, 
 typedef evhtp_res (*evhtp_hook_read_cb)(evhtp_req_t * req, struct evbuffer * buf, void * arg);
 typedef evhtp_res (*evhtp_hook_req_fini_cb)(evhtp_req_t * req, void * arg);
 typedef evhtp_res (*evhtp_hook_conn_fini_cb)(evhtp_conn_t * conn, void * arg);
+typedef evhtp_res (*evhtp_hook_ws_chunk_new_cb)(evhtp_req_t * r, void * arg);
 typedef evhtp_res (*evhtp_hook_chunk_new_cb)(evhtp_req_t * r, uint64_t len, void * arg);
 typedef evhtp_res (*evhtp_hook_chunk_fini_cb)(evhtp_req_t * r, void * arg);
 typedef evhtp_res (*evhtp_hook_chunks_fini_cb)(evhtp_req_t * r, void * arg);
