@@ -172,6 +172,8 @@ evhtp_thr_stop(evhtp_thr_t * thread) {
 
     pthread_mutex_unlock(&thread->rlock);
 
+    pthread_join(*thread->thr, NULL);
+
     return EVHTP_THR_RES_OK;
 }
 
@@ -232,8 +234,6 @@ evhtp_thr_new(evhtp_thr_init_cb init_cb, void * args) {
 
 int
 evhtp_thr_start(evhtp_thr_t * thread) {
-    int res;
-
     if (thread == NULL || thread->thr == NULL) {
         return -1;
     }
@@ -242,9 +242,7 @@ evhtp_thr_start(evhtp_thr_t * thread) {
         return -1;
     }
 
-    res = pthread_detach(*thread->thr);
-
-    return res;
+    return 0;
 }
 
 void
