@@ -465,6 +465,22 @@ evhtp_ws_data_free(evhtp_ws_data * ws_data) {
     return free(ws_data);
 }
 
+void
+evhtp_ws_data_repack_len(unsigned char * res, size_t extra_bytes) {
+#ifdef __ORDER_LITTLE_ENDIAN__
+    /** XXX: Or bswap() ? */
+    assert((extra_bytes % 2) == 0);
+    for (int i = 0; i < extra_bytes / 2; ++i) {
+        unsigned char c = res[i];
+        res[i] = res[extra_bytes - i - 1];
+        res[extra_bytes - i - 1] = c;
+    }
+#else
+    (void)res;
+    (void)len;
+#endif
+}
+
 unsigned char *
 evhtp_ws_data_pack(evhtp_ws_data * ws_data, size_t * out_len) {
     unsigned char * payload_start;
@@ -503,6 +519,11 @@ evhtp_ws_data_pack(evhtp_ws_data * ws_data, size_t * out_len) {
            (payload_end - payload_start));
 
     *out_len         = sizeof(evhtp_ws_frame_hdr) + (payload_end - payload_start);
+
+    if (HAS_EXTENDED_PAYLOAD_HDR(&ws_data->hdr)) {
+        evhtp_ws_data_repack_len(res + sizeof(uint16_t),
+                                 _fext_len[ws_data->hdr.len]);
+    }
 
     return res;
 } /* evhtp_ws_data_pack */
