@@ -263,7 +263,11 @@ evhtp_ssl_init(evhtp_t * htp, evhtp_ssl_cfg_t * cfg) {
     SSL_CTX_set_default_passwd_cb(htp->ssl_ctx, cfg->pem_passwd_cb);
 
     if (cfg->x509_chk_issued_cb != NULL) {
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
+        htp->ssl_ctx->cert_store->check_issued = cfg->x509_chk_issued_cb;
+#else
         X509_STORE_set_check_issued(SSL_CTX_get_cert_store(htp->ssl_ctx), cfg->x509_chk_issued_cb);
+#endif
     }
 
     if (cfg->verify_depth) {
