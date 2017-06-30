@@ -7,10 +7,6 @@
 
 #include <htparse.h>
 
-#ifndef EVHTP_DISABLE_REGEX
-#include <onigposix.h>
-#endif
-
 #include <sys/queue.h>
 #include <event2/event.h>
 #include <event2/listener.h>
@@ -305,6 +301,9 @@ struct evhtp_s {
  * hooks using the same rules.
  *
  */
+#ifndef EVHTP_DISABLE_REGEX
+typedef struct regex_t;
+#endif
 struct evhtp_callback_s {
     evhtp_callback_type type;           /**< the type of callback (regex|path) */
     evhtp_callback_cb   cb;             /**< the actual callback function */

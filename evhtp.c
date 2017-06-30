@@ -19,6 +19,9 @@
 #ifndef NO_SYS_UN
 #include <sys/un.h>
 #endif
+#ifndef EVHTP_DISABLE_REGEX
+#include <onigposix.h>
+#endif
 
 #include <sys/tree.h>
 
