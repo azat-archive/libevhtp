@@ -55,14 +55,13 @@ static void
 _evhtp_ssl_delete_cache_ent(evhtp_ssl_ctx_t * ctx, evhtp_ssl_sess_t * sess) {
     evhtp_t         * htp;
     evhtp_ssl_cfg_t * cfg;
-    unsigned char   * sid;
+    const unsigned char   * sid;
     unsigned int      slen;
 
     htp  = (evhtp_t *)SSL_CTX_get_app_data(ctx);
     cfg  = htp->ssl_cfg;
 
-    sid  = sess->session_id;
-    slen = sess->session_id_length;
+    sid  = SSL_SESSION_get_id(sess, &slen);
 
     if (cfg->cache_del) {
         (cfg->cache_del)(htp, sid, slen);
@@ -73,14 +72,13 @@ static int
 _evhtp_ssl_add_cache_ent(evhtp_ssl_t * ssl, evhtp_ssl_sess_t * sess) {
     evhtp_conn_t    * conn;
     evhtp_ssl_cfg_t * cfg;
-    unsigned char   * sid;
+    const unsigned char   * sid;
     int               slen;
 
     conn = (evhtp_conn_t *)SSL_get_app_data(ssl);
     cfg  = conn->htp->ssl_cfg;
 
-    sid  = sess->session_id;
-    slen = sess->session_id_length;
+    sid  = SSL_SESSION_get_id(sess, &slen);
 
     SSL_set_timeout(sess, cfg->cache_timeout);
 
@@ -134,12 +132,12 @@ _evhtp_ssl_servername(evhtp_ssl_t * ssl, int * unused, void * arg) {
         conn->vhost_via_sni = 1;
 
         SSL_set_SSL_CTX(ssl, evhtp_vhost->ssl_ctx);
-        SSL_set_options(ssl, SSL_CTX_get_options(ssl->ctx));
+        SSL_set_options(ssl, SSL_CTX_get_options((SSL_get_SSL_CTX(ssl))));
 
         if ((SSL_get_verify_mode(ssl) == SSL_VERIFY_NONE) ||
             (SSL_num_renegotiations(ssl) == 0)) {
-            SSL_set_verify(ssl, SSL_CTX_get_verify_mode(ssl->ctx),
-                           SSL_CTX_get_verify_callback(ssl->ctx));
+            SSL_set_verify(ssl, SSL_CTX_get_verify_mode((SSL_get_SSL_CTX(ssl))),
+                           SSL_CTX_get_verify_callback((SSL_get_SSL_CTX(ssl))));
         }
 
         return SSL_TLSEXT_ERR_OK;
@@ -265,7 +263,7 @@ evhtp_ssl_init(evhtp_t * htp, evhtp_ssl_cfg_t * cfg) {
     SSL_CTX_set_default_passwd_cb(htp->ssl_ctx, cfg->pem_passwd_cb);
 
     if (cfg->x509_chk_issued_cb != NULL) {
-        htp->ssl_ctx->cert_store->check_issued = cfg->x509_chk_issued_cb;
+        X509_STORE_set_check_issued(SSL_CTX_get_cert_store(htp->ssl_ctx), cfg->x509_chk_issued_cb);
     }
 
     if (cfg->verify_depth) {
