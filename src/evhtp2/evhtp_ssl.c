@@ -8,13 +8,12 @@
 #include "evhtp2/evhtp_ssl-internal.h"
 
 static int             session_id_context    = 1;
-#ifdef EVHTP_ENABLE_EVTHR
+#if defined(EVHTP_ENABLE_EVTHR) && \
+    ((OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER))
 static int             ssl_num_locks;
 static evhtp_mutex_t * ssl_locks;
 static int             ssl_locks_initialized = 0;
-#endif
 
-#ifdef EVHTP_ENABLE_EVTHR
 static unsigned long
 _evhtp_ssl_get_thread_id(void) {
 #ifndef WIN32
@@ -23,6 +22,19 @@ _evhtp_ssl_get_thread_id(void) {
     return (unsigned long)(pthread_self().p);
 #endif
 }
+
+static void
+_evhtp_ssl_thread_lock(int mode, int type, const char * file, int line) {
+    if (type < ssl_num_locks) {
+        if (mode & CRYPTO_LOCK) {
+            pthread_mutex_lock(&(ssl_locks[type]));
+        } else {
+            pthread_mutex_unlock(&(ssl_locks[type]));
+        }
+    }
+}
+
+#endif /* EVHTP_ENABLE_EVTHR */
 
 static void print_err(int val)
 {
@@ -37,19 +49,6 @@ static void print_err(int val)
         printf("%s in %s %s\n", msg, lib, func);
     }
 }
-
-static void
-_evhtp_ssl_thread_lock(int mode, int type, const char * file, int line) {
-    if (type < ssl_num_locks) {
-        if (mode & CRYPTO_LOCK) {
-            pthread_mutex_lock(&(ssl_locks[type]));
-        } else {
-            pthread_mutex_unlock(&(ssl_locks[type]));
-        }
-    }
-}
-
-#endif
 
 static void
 _evhtp_ssl_delete_cache_ent(evhtp_ssl_ctx_t * ctx, evhtp_ssl_sess_t * sess) {
@@ -152,6 +151,8 @@ evhtp_ssl_servername(evhtp_ssl_t * ssl, int * unused, void * arg) {
 }
 
 #ifdef EVHTP_ENABLE_EVTHR
+
+#if ((OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER))
 int
 evhtp_ssl_use_threads(void) {
     int i;
@@ -174,6 +175,12 @@ evhtp_ssl_use_threads(void) {
 
     return 0;
 }
+#else
+int
+evhtp_ssl_use_threads(void) {
+    return 0;
+}
+#endif
 
 #endif
 
